@@ -137,3 +137,79 @@ Explanation:
 =================================================
 
 """
+def process_records(records):
+    clean_records = []
+    error_log = []
+    
+    # 2. Iterate over the list with an index counter
+    for index, record in enumerate(records):
+        # 3. For each record, use a try / except / else chain
+        try:
+            # Access keys (may raise KeyError or TypeError)
+            name = record["name"]
+            age_str = record["age"]
+            score_str = record["score"]
+            
+            # Convert values (may raise ValueError)
+            age = int(age_str)
+            score = float(score_str)
+            
+        except (KeyError, TypeError) as e:
+            # 1 & 2. Catching MULTIPLE exception types and inspecting object
+            error_class_name = type(e)._name_
+            error_log.append((index, error_class_name, str(e)))
+            
+        except ValueError as e:
+            # Record error with the literal string message
+            error_class_name = type(e)._name_
+            error_log.append((index, error_class_name, str(e)))
+            
+        else:
+            # 4. Runs ONLY when no exception was raised
+            clean_records.append({
+                "name": name,
+                "age": age,
+                "score": score
+            })
+            
+    return (clean_records, error_log)
+
+
+def process_strict(records):
+    # Call process_records to do the initial evaluation
+    clean_records, error_log = process_records(records)
+    
+    # If ANY error occurred, raise a RuntimeError summarising failures
+    if error_log:
+        num_failures = len(error_log)
+        # 3. Using raise ... from None to suppress the original traceback chain
+        raise RuntimeError(f"{num_failures} record(s) failed to process") from None
+        
+    return clean_records
+
+
+# --- Driver / Execution Code ---
+_name_ = " "
+if _name_ == "_main_":
+    # Sample Input Example from assignment images
+    records = [
+        {"name": "Alice", "age": "25",  "score": "88.5"},
+        {"name": "Bob",   "age": "abc", "score": "70"},
+        {"name": "Carol", "age": "30"},                    # Missing "score" key
+        "not a dict",                                      # Wrong type altogether
+        {"name": "Dan",   "age": "40",  "score": "55.5"}
+    ]
+
+    # 6. Call both functions and print results cleanly
+    clean, errors = process_records(records)
+    
+    print("Clean Records:")
+    print(clean)
+    print("\nError Log:")
+    print(errors)
+    print()
+
+    try:
+        process_strict(records)
+    except RuntimeError as e:
+        print(f"Strict mode raised: {type(e)._name_}: {e}")

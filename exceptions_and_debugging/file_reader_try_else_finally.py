@@ -124,3 +124,48 @@ Explanation:
 =================================================
 
 """
+import os
+
+def read_numbers(path):
+    # Initialize tracking variables
+    lines_read = 0
+    total_sum = 0.0
+    
+    try:
+        # The prompt asks us to use 'with open(path) as f:' 
+        # but also to explicitly show full try/except/else/finally behavior
+        with open(path, 'r') as f:
+            for line in f:
+                # Strip whitespace/newlines and skip empty lines if necessary, 
+                # or try parsing immediately to let ValueError catch invalid formats.
+                cleaned_line = line.strip()
+                if not cleaned_line:
+                    continue  # skips blank lines safely
+                    
+                total_sum += float(cleaned_line)
+                lines_read += 1
+                
+    except FileNotFoundError:
+        # File path is wrong
+        return ("error", f"File not found: {path}", lines_read)
+        
+    except PermissionError:
+        # File cannot be read due to permissions
+        return ("error", f"Permission denied: {path}", lines_read)
+        
+    except ValueError:
+        # A line could not be successfully cast to a float
+        return ("error", "Invalid number on a line", lines_read)
+        
+    except Exception as e:
+        # Catch-all for any other unexpected exceptions
+        return ("error", str(e), lines_read)
+        
+    else:
+        # ONLY runs if NO exception was raised in the try block
+        # Use it for the success path
+        return ("ok", total_sum, lines_read)
+        
+    finally:
+        # ALWAYS runs no matter what
+        print("Done reading")

@@ -63,3 +63,45 @@ Calculation finished
 =================================================
 
 """
+def safe_divide(a, b):
+    try:
+        # Step 1: Handle potential non-numeric inputs by casting to float
+        # This will raise a ValueError if inputs are text strings like "ten"
+        num1 = float(a)
+        num2 = float(b)
+        
+        # Step 2: Perform the division operation
+        # This will raise a ZeroDivisionError if num2 is 0.0
+        result = num1 / num2
+        
+        # If no exceptions were raised, return the success tuple
+        return ("ok", result)
+        
+    except ValueError:
+        # Triggers when input cannot be converted to a float
+        return ("error", "Inputs must be numbers")
+        
+    except ZeroDivisionError:
+        # Triggers when attempting to divide by zero
+        return ("error", "Cannot divide by zero")
+        
+    except Exception as e:
+        # Catch-all block for any other unexpected bug
+        return ("error", f"Unexpected error: {str(e)}")
+        
+    finally:
+        # The assignment output shows "Calculation finished" prints in EVERY example case
+        print("Calculation finished")
+
+
+# --- Test Cases matching your examples ---
+_name_ =     ' '
+if _name_ == "_main_":
+    print("--- Test 1 ---")
+    print(safe_divide("10", "2"))
+    
+    print("\n--- Test 2 ---")
+    print(safe_divide("10", "0"))
+    
+    print("\n--- Test 3 ---")
+    print(safe_divide("ten", "2"))
